@@ -386,7 +386,7 @@ const generatePuzzle = (targetDifficulty: Difficulty): { puzzle: number[][], sol
 
 // --- Components ---
 
-const MAX_HINTS = 3;
+const MAX_HINTS = 5;
 
 export default function App() {
   const [grid, setGrid] = useState<Grid>(BLANK_GRID());
@@ -526,6 +526,11 @@ export default function App() {
 
     if (num !== null && completedDigits.has(num)) return;
 
+    // Clear current hint if the selected cell was the hint target
+    if (currentHint && r === currentHint.row && c === currentHint.col) {
+      setCurrentHint(null);
+    }
+
     // Clear validation errors on edit
     setValidationErrors([]);
 
@@ -533,6 +538,12 @@ export default function App() {
     setHistory(prev => [JSON.parse(JSON.stringify(grid)), ...prev].slice(0, 10));
 
     const newGrid = JSON.parse(JSON.stringify(grid)) as Grid;
+    // Clear hint target flags
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        newGrid[row][col].isHintTarget = false;
+      }
+    }
     
     if (notesMode && num !== null) {
       const notes = newGrid[r][c].notes;
@@ -713,11 +724,11 @@ export default function App() {
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" /> {formatTime(time)}
             </span>
-            <span className="flex items-center gap-1">
-              <AlertCircle className="w-3 h-3" /> Mistakes: {mistakes}
+            <span className="flex items-center gap-1 text-rose-400">
+              <AlertCircle className="w-3 h-3" /> {mistakes}
             </span>
-            <span className="flex items-center gap-1">
-              <Lightbulb className="w-3 h-3" /> Hints: {MAX_HINTS - hintsUsed}
+            <span className={`flex items-center gap-1 transition-colors ${hintsUsed >= MAX_HINTS ? 'text-slate-700' : 'text-amber-400'}`}>
+              <Lightbulb className="w-3 h-3" /> {MAX_HINTS - hintsUsed}
             </span>
           </div>
         </div>
