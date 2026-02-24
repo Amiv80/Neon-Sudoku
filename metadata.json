@@ -1,0 +1,5 @@
+{
+  "name": "Neon Sudoku",
+  "description": "A polished, high-performance Sudoku game with real-time conflict detection, notes mode, and a unique puzzle generator.",
+  "requestFramePermissions": []
+}
